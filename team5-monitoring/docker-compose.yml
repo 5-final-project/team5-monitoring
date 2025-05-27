@@ -1,0 +1,31 @@
+version: "3.8"
+networks:
+  team5-monitor:
+    name: team5-monitor
+
+services:
+  prom:
+    image: prom/prometheus:v2.52.0
+    container_name: team5-pro
+    volumes:
+      - ./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
+      - prom_data:/prometheus
+    networks: [team5-monitor]
+    ports: ["9500:9090"]
+    restart: unless-stopped
+
+  grafana:
+    image: grafana/grafana-oss:10.4.2
+    container_name: team5-gra
+    env_file:
+      - .env                 # GF_SECURITY_ADMIN_PASSWORD 등
+    volumes:
+      - graf_data:/var/lib/grafana
+      - ./grafana/provisioning:/etc/grafana/provisioning
+    networks: [team5-monitor]
+    ports: ["3500:3000"]
+    restart: unless-stopped
+
+volumes:
+  prom_data:
+  graf_data:
