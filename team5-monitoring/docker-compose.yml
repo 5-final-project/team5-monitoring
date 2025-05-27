@@ -10,7 +10,7 @@ services:
     volumes:
       - ./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
       - prom_data:/prometheus
-    networks: [team5-monitor]
+    
     network_mode: host
     #ports: ["9500:9090"]
     restart: unless-stopped
