@@ -34,7 +34,7 @@ services:
       - ./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml:ro
       - prom_data:/prometheus
     ports:
-      - "9500:9090"           # 호스트 9500 → 컨테이너 9090 (Team5 전용)
+      - "9501:9090"           # 호스트 9500 → 컨테이너 9090 (Team5 전용)
                                 # 이 설정은 올바릅니다! team4와 충돌하지 않습니다.
     restart: unless-stopped
     networks:
