@@ -1,34 +1,45 @@
 version: "3.8"
 
 services:
-  # ──────────────── Prometheus ────────────────
-  prom:
-    image: prom/prometheus:v2.52.0
-    container_name: team5-pro
-    # Prometheus 설정 파일과 데이터 보존용 볼륨
-    volumes:
-      - ./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml:ro
-      - prom_data:/prometheus
-    # 호스트 네트워크 모드로 실행 → 포트 충돌 없이 9090 포트 사용
+  # ─── Node Exporter (CPU/메모리/디스크/네트워크) ───
+  node-exp:
+    image: quay.io/prometheus/node-exporter:v1.7.0
+    container_name: team5-node-exp
     network_mode: host
     restart: unless-stopped
 
-  # ──────────────── Grafana ────────────────
+  # ─── DCGM Exporter (GPU) ───
+  gpu-exp:
+    image: nvidia/dcgm-exporter:latest
+    container_name: team5-gpu-exp
+    network_mode: host
+    privileged: true
+    restart: unless-stopped
+
+  # ─── Prometheus ───
+  prometheus:
+    image: prom/prometheus:v2.52.0
+    container_name: team5-prom
+    volumes:
+      - ./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - prom_data:/prometheus
+    ports:
+      - "9500:9090"           # 호스트 9500 → 컨테이너 9090
+    restart: unless-stopped
+
+  # ─── Grafana ───
   grafana:
     image: grafana/grafana-oss:10.4.2
-    container_name: team5-gra
-    # 로그인 정보(.env)에 ID/PW 설정
+    container_name: team5-grafana
     env_file:
-      - .env
-    # 데이터 보존용 볼륨과 프로비저닝 폴더
+      - .env                  # GF_SECURITY_ADMIN_USER/PASSWORD
     volumes:
-      - graf_data:/var/lib/grafana
+      - grafana_data:/var/lib/grafana
       - ./grafana/provisioning:/etc/grafana/provisioning:ro
-    # 호스트의 3600 포트를 컨테이너 3000 포트로 매핑
     ports:
-      - "3600:3000"
+      - "3600:3000"           # 호스트 3600 → 컨테이너 3000
     restart: unless-stopped
 
 volumes:
   prom_data:
-  graf_data:
+  grafana_data:

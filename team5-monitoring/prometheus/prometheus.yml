@@ -2,7 +2,14 @@ global:
   scrape_interval: 15s
 
 scrape_configs:
-  # Whisper STT 서버 메트릭
+  - job_name: 'team5_node'
+    static_configs:
+      - targets: ['localhost:9105']
+
+  - job_name: 'team5_gpu'
+    static_configs:
+      - targets: ['localhost:9400']
+
   - job_name: 'whisper_node'
     static_configs:
       - targets: ['team5stt.ap.loclx.io:9105']
@@ -11,20 +18,18 @@ scrape_configs:
     static_configs:
       - targets: ['team5stt.ap.loclx.io:9400']
 
-  # RAG 파이프라인 서버
-  - job_name: 'rag_node'
+  - job_name: 'server2_node'
     static_configs:
-      - targets: ['team5rag.ap.loclx.io:9105']
+      - targets: ['SERVER2_IP:9105']
 
-  - job_name: 'rag_gpu'
+  - job_name: 'server2_gpu'
     static_configs:
-      - targets: ['team5rag.ap.loclx.io:9400']
+      - targets: ['SERVER2_IP:9400']
 
-  # Report 서버
-  - job_name: 'report_node'
+  - job_name: 'server3_node'
     static_configs:
-      - targets: ['report.ap.loclx.io:9105']
+      - targets: ['SERVER3_IP:9105']
 
-  - job_name: 'report_gpu'
+  - job_name: 'server3_gpu'
     static_configs:
-      - targets: ['report.ap.loclx.io:9400']
+      - targets: ['SERVER3_IP:9400']
