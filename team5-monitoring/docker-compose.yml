@@ -1,29 +1,32 @@
 version: "3.8"
-networks:
-  team5-monitor:
-    name: team5-monitor
 
 services:
+  # ──────────────── Prometheus ────────────────
   prom:
     image: prom/prometheus:v2.52.0
     container_name: team5-pro
+    # Prometheus 설정 파일과 데이터 보존용 볼륨
     volumes:
-      - ./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
+      - ./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml:ro
       - prom_data:/prometheus
-    
+    # 호스트 네트워크 모드로 실행 → 포트 충돌 없이 9090 포트 사용
     network_mode: host
-    #ports: ["9500:9090"]
     restart: unless-stopped
 
+  # ──────────────── Grafana ────────────────
   grafana:
     image: grafana/grafana-oss:10.4.2
     container_name: team5-gra
+    # 로그인 정보(.env)에 ID/PW 설정
     env_file:
-      - .env                 # GF_SECURITY_ADMIN_PASSWORD 등
+      - .env
+    # 데이터 보존용 볼륨과 프로비저닝 폴더
     volumes:
       - graf_data:/var/lib/grafana
-      - ./grafana/provisioning:/etc/grafana/provisioning
-    ports: ["3600:3000"]
+      - ./grafana/provisioning:/etc/grafana/provisioning:ro
+    # 호스트의 3600 포트를 컨테이너 3000 포트로 매핑
+    ports:
+      - "3600:3000"
     restart: unless-stopped
 
 volumes:

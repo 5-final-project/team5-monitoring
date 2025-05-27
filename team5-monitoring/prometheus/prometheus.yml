@@ -1,16 +1,8 @@
 global:
   scrape_interval: 15s
+
 scrape_configs:
-  # ──────────────── 팀5 모니터링 서버 자체 ────────────────
-  - job_name: 'team5_node'
-    static_configs:
-      - targets: ['host.docker.internal:9105']
-
-  - job_name: 'team5_gpu'
-    static_configs:
-      - targets: ['host.docker.internal:9400']
-
-  # ──────────────── Whisper‑STT 서버 ────────────────
+  # Whisper STT 서버 메트릭
   - job_name: 'whisper_node'
     static_configs:
       - targets: ['team5stt.ap.loclx.io:9105']
@@ -18,3 +10,21 @@ scrape_configs:
   - job_name: 'whisper_gpu'
     static_configs:
       - targets: ['team5stt.ap.loclx.io:9400']
+
+  # RAG 파이프라인 서버
+  - job_name: 'rag_node'
+    static_configs:
+      - targets: ['team5rag.ap.loclx.io:9105']
+
+  - job_name: 'rag_gpu'
+    static_configs:
+      - targets: ['team5rag.ap.loclx.io:9400']
+
+  # Report 서버
+  - job_name: 'report_node'
+    static_configs:
+      - targets: ['report.ap.loclx.io:9105']
+
+  - job_name: 'report_gpu'
+    static_configs:
+      - targets: ['report.ap.loclx.io:9400']
