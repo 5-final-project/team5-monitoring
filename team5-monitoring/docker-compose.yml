@@ -4,42 +4,52 @@ services:
   # ─── Node Exporter (CPU/메모리/디스크/네트워크) ───
   node-exp:
     image: quay.io/prometheus/node-exporter:v1.7.0
-    container_name: team5-node-exp
+    container_name: team5-node-exp # 컨테이너 이름
     network_mode: host
+    command: '--web.listen-address=:9105' # team5 전용 node-exporter는 9105 포트 사용
     restart: unless-stopped
 
   # ─── DCGM Exporter (GPU) ───
-  gpu-exp:
-    image: nvidia/dcgm-exporter:latest
-    container_name: team5-gpu-exp
-    network_mode: host
-    privileged: true
-    restart: unless-stopped
+  # gpu-exp: 서비스는 주석 처리하거나 삭제합니다.
+  #   image: nvidia/dcgm-exporter:latest
+  #   container_name: team5-gpu-exp
+  #   network_mode: host
+  #   privileged: true
+  #   restart: unless-stopped
+  #   # 이유: 이미 서버에 friendly_galois (포트 9400)가 실행 중이므로 그것을 활용합니다.
 
   # ─── Prometheus ───
   prometheus:
     image: prom/prometheus:v2.52.0
-    container_name: team5-prom
+    container_name: team5-prom # 컨테이너 이름
     volumes:
       - ./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml:ro
       - prom_data:/prometheus
     ports:
-      - "9500:9090"           # 호스트 9500 → 컨테이너 9090
+      - "9500:9090"           # 호스트 9500 → 컨테이너 9090 (Team5 전용)
     restart: unless-stopped
+    networks:                 # Grafana와 통신을 위한 네트워크 연결
+      - team5-net
 
   # ─── Grafana ───
   grafana:
     image: grafana/grafana-oss:10.4.2
-    container_name: team5-grafana
+    container_name: team5-grafana # 컨테이너 이름
     env_file:
-      - .env                  # GF_SECURITY_ADMIN_USER/PASSWORD
+      - .env                  # Grafana 관리자 계정 정보 파일
     volumes:
       - grafana_data:/var/lib/grafana
-      - ./grafana/provisioning:/etc/grafana/provisioning:ro
+      - ./grafana/provisioning:/etc/grafana/provisioning:ro # 프로비저닝 설정이 있다면 유지
     ports:
-      - "3600:3000"           # 호스트 3600 → 컨테이너 3000
+      - "3600:3000"           # 호스트 3600 → 컨테이너 3000 (Team5 전용)
     restart: unless-stopped
+    networks:                 # Prometheus와 통신을 위한 네트워크 연결
+      - team5-net
 
 volumes:
   prom_data:
   grafana_data:
+
+networks:                     # Docker Compose 내부 통신용 네트워크 생성
+  team5-net:
+    driver: bridge
