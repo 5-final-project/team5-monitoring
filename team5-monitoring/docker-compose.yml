@@ -23,7 +23,6 @@ services:
     volumes:
       - graf_data:/var/lib/grafana
       - ./grafana/provisioning:/etc/grafana/provisioning
-    networks: [team5-monitor]
     ports: ["3600:3000"]
     restart: unless-stopped
 
