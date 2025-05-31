@@ -1,0 +1,31 @@
+global:
+  scrape_interval: 15s
+  evaluation_interval: 15s
+
+scrape_configs:
+  - job_name: "prometheus"
+    static_configs:
+      - targets: ["localhost:9090"]
+        labels:
+          app: "prometheus"
+  
+  - job_name: "whisper-stt-server"
+    static_configs:
+      - targets: ["whisper-stt-server:8666"]
+  
+  - job_name: "server2-rag"
+    static_configs:
+      - targets: ["server2-rag:8125"]
+  
+  - job_name: "server3-report"
+    static_configs:
+      - targets: ["server3-report:8377"]
+  
+  - job_name: "team5_host_node"
+    static_configs:
+      - targets: ["node-exporter-team5:9105"]
+  
+  - job_name: "team5_host_gpu"
+    static_configs:
+      - targets: ["gpu-exporter:9400"]
+
